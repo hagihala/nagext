@@ -1,8 +1,51 @@
 #!/usr/bin/env python
 
 from BeautifulSoup import BeautifulSoup
+import requests
+import lxml.html
 import urllib2
 import re, htmlentitydefs
+
+
+class CommandList(object):
+
+    def __init__(self, url=None):
+        if url == None:
+            self._url = 'http://old.nagios.org/developerinfo/externalcommands/commandlist.php'
+        self._command_urls = []
+
+        r = requests.get(self._url)
+        html = lxml.html.fromstring(r.text)
+        del r
+        links = html.xpath('//a')
+        for link in links:
+            self._command_urls.append(a_tag.attrib['href'])
+
+    def __iter__():
+        for url in self._command_urls:
+            yield Command(url)
+
+class Command(object):
+
+    def __init__(self, url):
+        self._url = url
+        self._name = ''
+        self._params = []
+        self._description = ''
+
+        r = requests.get(self._url)
+        html = lxml.html.fromstring(r.text)
+        del r
+        tds = html.xpath('//td')
+        name = tds[1].text.strip()
+        format_ = tds[4].text.strip()
+        description = tds[7].text.strip()
+
+        x = format_.split(';')
+        assert td_name == x[0]
+        self._name = x[0]
+        self._params = [ param[1:-1] for param in x[1:] ]
+
 
 def unescape(text):
     """
@@ -36,7 +79,7 @@ def unescape(text):
         return text # leave as is
     return re.sub("&#?\w+;", fixup, text)
 
-def wrap(txt, ind='', cols=80):
+def wrap(txt, indent='', cols=80):
     """
     wraps txt (line of text) at cols columns
     """
@@ -57,7 +100,7 @@ def wrap(txt, ind='', cols=80):
                     line += word
                     col += len(word)
                 else:
-                    line = line.rstrip() + "\n" + ind + word
+                    line = line.rstrip() + "\n" + indent + word
                     #col = len(ind + word)
                     col = len(word)
                 word = ""
@@ -71,20 +114,20 @@ def wrap(txt, ind='', cols=80):
         if col + len(word) < cols:
             line += word
         else:
-            line = line.rstrip() + "\n" + ind + word
+            line = line.rstrip() + "\n" + indent + word
     if txt[-1] == '\n':
         line += "\n" 
     return line
 
-def cmd2py(cmd, descr):
-    cmd = cmd.strip().replace('<', '').replace('>', '')
-    descr = descr.strip()
+def cmd2py(command, description):
+    command = command.strip().replace('<', '').replace('>', '')
+    description = description.strip()
     c = cmd.split(';')
     name = c[0].lower()
     args = ', '.join(c[1:])
     method = "    def %s(self, %s):\n" % (name, args) + \
         '        """\n' + \
-        '        %s\n' % wrap(descr, ind='        ') + \
+        '        %s\n' % wrap(description, indent='        ') + \
         '        """\n' + \
         "        self.run('%s', %s)\n" % (c[0], args)
     return method
@@ -92,11 +135,9 @@ def cmd2py(cmd, descr):
 if __name__ == '__main__':
     root_url = 'http://old.nagios.org/developerinfo/externalcommands/'
 
-    f = urllib2.urlopen(root_url + 'commandlist.php')
-
-    soup = BeautifulSoup(f.read())
-
-    f.close()
+    r = requests.get(root_url + 'commandlist.php')
+    soup = BeautifulSoup(r.text)
+    del r
 
     content_table = soup.find('table', { 'class' : 'Content' })
     hrefs = content_table.findAll('a')[4:]
@@ -104,28 +145,28 @@ if __name__ == '__main__':
     for a in hrefs:
         #print a['href']
         #print a.string
-        f = urllib2.urlopen(root_url + a['href'])
-        s = BeautifulSoup(f.read())
+        r = requests.get(root_url + a['href'])
+        s = BeautifulSoup(r.text)
+        del r
         t = s.find('table', { 'class': 'Content' })
         tds = t.findAll('td')
         p = False
-        cmd = ''
-        descr = ''
-        set_cmd = set_descr = False
+        command = ''
+        description = ''
+        set_command = set_description = False
         for td in tds:
-            if set_cmd:
-                cmd = unescape(td.string.decode())
-                set_cmd = False
-            elif set_descr:
-                descr = unescape(td.string.decode())
-                set_descr = False
+            if set_command:
+                command = unescape(td.string.decode())
+                set_command = False
+            elif set_description:
+                description = unescape(td.string.decode())
+                set_description = False
             if td.string == 'Command Format:':
-                set_cmd = True
+                set_command = True
             elif td.string == 'Description:':
-                set_descr = True
-            if cmd and descr:
+                set_description = True
+            if command and description:
                 break
-        if cmd and descr:
-            print cmd2py(cmd, descr)
-        f.close()
+        if command and description:
+            print cmd2py(command, description)
 
