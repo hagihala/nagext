@@ -66,8 +66,7 @@ class NagExt(object):
             else:
                 return a
         try:
-            #str_args = ';'.join([ str(bool2int(a)) for a in args ])
-            str_args = ';'.join(map(str, map(bool2int, args)))
+            str_args = ';'.join([ str(bool2int(a)) for a in args ])
             print >> self._cmd_f, "[%lu] %s;%s" % (time(), cmd, str_args)
         except Exception, e:
             raise ExecError(str(e))

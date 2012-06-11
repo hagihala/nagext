@@ -66,61 +66,13 @@ class NagExt(object):
             else:
                 return a
         try:
-            #str_args = ';'.join([ str(bool2int(a)) for a in args ])
-            str_args = ';'.join(map(str, map(bool2int, args)))
+            str_args = ';'.join([ str(bool2int(a)) for a in args ])
             print >> self._cmd_f, "[%lu] %s;%s" % (time(), cmd, str_args)
         except Exception, e:
             raise ExecError(str(e))
 
     # next follow automatically generated methods from nagios developer documentation
     # for external commands
-
-    def acknowledge_host_problem(self, host_name, sticky, notify, persistent, author, comment):
-        """
-        Allows you to acknowledge the current problem for the specified host.  By
-        acknowledging the current problem, future notifications (for the same host
-        state) are disabled.  If the "sticky" option is set to one (1), the
-        acknowledgement will remain until the host returns to an UP state.  Otherwise
-        the acknowledgement will automatically be removed when the host changes state.
-        If the "notify" option is set to one (1), a notification will be sent out to
-        contacts indicating that the current host problem has been acknowledged.  If the
-        "persistent" option is set to one (1), the comment associated with the
-        acknowledgement will survive across restarts of the Nagios process.  If not, the
-        comment will be deleted the next time Nagios restarts.
-        """
-        self.run('ACKNOWLEDGE_HOST_PROBLEM', host_name, sticky, notify, persistent, author, comment)
-
-    def acknowledge_svc_problem(self, host_name, service_description, sticky, notify, persistent, author, comment):
-        """
-        Allows you to acknowledge the current problem for the specified service.  By
-        acknowledging the current problem, future notifications (for the same
-        servicestate) are disabled.  If the "sticky" option is set to one (1), the
-        acknowledgement will remain until the service returns to an OK state.  Otherwise
-        the acknowledgement will automatically be removed when the service changes
-        state.  If the "notify" option is set to one (1), a notification will be sent
-        out to contacts indicating that the current service problem has been
-        acknowledged.  If the "persistent" option is set to one (1), the comment
-        associated with the acknowledgement will survive across restarts of the Nagios
-        process.  If not, the comment will be deleted the next time Nagios restarts.
-        """
-        self.run('ACKNOWLEDGE_SVC_PROBLEM', host_name, service_description, sticky, notify, persistent, author, comment)
-
-    def add_host_comment(self, host_name, persistent, author, comment):
-        """
-        Adds a comment to a particular host.  If the "persistent" field is set to zero
-        (0), the comment will be deleted the next time Nagios is restarted.  Otherwise,
-        the comment will persist across program restarts until it is deleted manually.
-        """
-        self.run('ADD_HOST_COMMENT', host_name, persistent, author, comment)
-
-    def add_svc_comment(self, host_name, service_description, persistent, author, comment):
-        """
-        Adds a comment to a particular service.  If the "persistent" field is set to
-        zero (0), the comment will be deleted the next time Nagios is restarted.
-        Otherwise, the comment will persist across program restarts until it is deleted
-        manually.
-        """
-        self.run('ADD_SVC_COMMENT', host_name, service_description, persistent, author, comment)
 
     def change_contact_host_notification_timeperiod(self, contact_name, notification_timeperiod):
         """
@@ -221,12 +173,6 @@ class NagExt(object):
         """
         self.run('CHANGE_HOST_CHECK_COMMAND', host_name, check_command)
 
-    def change_host_check_timeperiod(self, host_name, timeperiod):
-        """
-        Changes the valid check period for the specified host.
-        """
-        self.run('CHANGE_HOST_CHECK_TIMEPERIOD', host_name, timeperiod)
-
     def change_host_check_timeperiod(self, host_name, check_timeperod):
         """
         Changes the check timeperiod for a particular host to what is specified by the
@@ -235,6 +181,12 @@ class NagExt(object):
         timeperiod must have been configured in Nagios before it was last (re)started.
         """
         self.run('CHANGE_HOST_CHECK_TIMEPERIOD', host_name, check_timeperod)
+
+    def change_host_check_timeperiod(self, host_name, timeperiod):
+        """
+        Changes the valid check period for the specified host.
+        """
+        self.run('CHANGE_HOST_CHECK_TIMEPERIOD', host_name, timeperiod)
 
     def change_host_event_handler(self, host_name, event_handler_command):
         """
