@@ -10,5 +10,5 @@ setup(name='python-nagext',
     author='Alexander Duryagin',
     author_email='daa@vologda.ru',
     url='http://github.com/daa/nagext',
-    py_modules=['nagext'])
+    packages=['nagext'])
 

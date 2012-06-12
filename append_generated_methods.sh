@@ -2,5 +2,4 @@
 
 cat nagext.tmpl.py > nagext.py
 
-./nag_external_commands.py >> nagext.py
-
+./nagext/importer.py >> nagext.py
