@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- vim:set fileencoding=utf-8 ft=python:
 from time import time
+import os
 import pickle
 from contextlib import closing
 from flask import Flask, request, abort, render_template, g
@@ -8,18 +9,21 @@ from flask import Flask, request, abort, render_template, g
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.config['COMMAND_FILE'] = 'commandfile'
-app.config['NAGEXT_COMMANDS'] = pickle.load(open('nagext_commands.pickle'))
+app.config['NAGEXT_COMMAND_LIST'] = 'nagext_commands.pickle'
+app.config.from_envvar('NAGEXT_CONFIGFILE')
+
+nagext_commands = pickle.load(open(app.config['NAGEXT_COMMAND_LIST']))
 
 @app.route('/')
 def top():
     return '<br />'.join(
             ['<a href="/commands/%s">%s</a>' % (command.lower(), command)
-            for command in app.config['NAGEXT_COMMANDS']]
+                for command in nagext_commands]
             )
+
 
 @app.route('/commands/<name>', methods=['GET', 'POST'])
 def command(name):
-    nagext_commands = app.config['NAGEXT_COMMANDS']
     if name.upper() not in nagext_commands:
         abort(404)
     if request.method == 'POST':
@@ -33,13 +37,13 @@ def command(name):
             )
 
 def post_command(name):
-    command = app.config['NAGEXT_COMMANDS'][name.upper()]
+    command = nagext_commands[name.upper()]
     args = []
     for argname in command['params']:
         if argname not in request.form:
             abort(400)
         args.append(request.form[argname])
-    command_string = "[%lu] %s;%s" % (
+    command_string = "[%lu] %s;%s\n" % (
             time(),
             name.upper(),
             ';'.join(args)
