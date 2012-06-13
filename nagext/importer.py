@@ -68,12 +68,12 @@ class Command(object):
 def wrap(txt, indent='', cols=79):
     regexp = re.compile(r"\s")
     string = ''
-    line = ''
+    line = indent
     for word in regexp.split(txt):
-        if word == '':
+        if len(word) == 0:
             continue
-        if line == '':
-            line += word
+        elif len(line) == 0:
+            line = word
         elif len(line) + 1 + len(word) <= cols:
             line += ' ' + word
         else:
@@ -89,7 +89,7 @@ def cmd2py(command):
     run_args = ', '.join(["'%s'" % command.name] + command.params)
     method_string = "    def %s(self, %s):\n" % (funcname, params) + \
         '        """\n' + \
-        '        %s\n' % wrap(command.description, indent='        ') + \
+        '%s\n' % wrap(command.description, indent='        ') + \
         '        """\n' + \
         "        self.run(%s)\n" % (run_args)
     return method_string
