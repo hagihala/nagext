@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cat nagext.tmpl.py > nagext.py
+cat nagext.tmpl.py > nagext/commands.py
 
-./nagext/importer.py >> nagext.py
+./nagext/importer.py >> nagext/commands.py
