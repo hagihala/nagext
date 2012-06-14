@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*- vim:set fileencoding=utf-8 ft=python:
 from time import time
 import os
+os.chdir(os.environ['PWD'])
 import pickle
 from contextlib import closing
 from flask import Flask, request, abort, render_template, g
@@ -13,6 +14,7 @@ app.config['NAGEXT_COMMAND_LIST'] = 'nagext_commands.pickle'
 app.config.from_envvar('NAGEXT_CONFIGFILE')
 
 nagext_commands = pickle.load(open(app.config['NAGEXT_COMMAND_LIST']))
+
 
 @app.route('/')
 def top():
@@ -35,6 +37,7 @@ def command(name):
             command['params'],
             command['description']
             )
+
 
 def post_command(name):
     command = nagext_commands[name.upper()]
