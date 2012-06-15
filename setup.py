@@ -20,6 +20,6 @@ setup(name='python-nagext',
 #        },
     packages=['nagext'],
     data_files=[
-        ('share/nagext', ['share/nagext/nagext_commands.pickle']),
+        ('share/nagext', ['share/nagext_commands.pickle']),
         ],
     )
