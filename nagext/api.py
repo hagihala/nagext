@@ -11,6 +11,11 @@ app = Flask(__name__)
 app.config['DEBUG'] = True
 app.config['COMMAND_FILE'] = 'commandfile'
 app.config['NAGEXT_COMMAND_LIST'] = 'nagext_commands.pickle'
+
+# Dev server only
+app.config['BIND_HOST'] = '127.0.0.1'
+app.config['BIND_PORT'] = 5000
+
 app.config.from_envvar('NAGEXT_CONFIGFILE')
 
 nagext_commands = pickle.load(open(app.config['NAGEXT_COMMAND_LIST']))
@@ -57,4 +62,6 @@ def post_command(name):
 
 
 if __name__ == '__main__':
-    app.run(debug=app.config['DEBUG'])
+    app.run(host=app.config['BIND_HOST'],
+            port=app.config['BIND_PORT'],
+            debug=app.config['DEBUG'])
