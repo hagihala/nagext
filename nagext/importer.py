@@ -2,8 +2,7 @@
 
 import re
 import requests
-import lxml.html
-
+from bs4 import BeautifulSoup
 
 class CommandList(object):
 
@@ -14,11 +13,11 @@ class CommandList(object):
         self._command_paths = []
 
         r = requests.get(self._base_url + self._relative_path)
-        html = lxml.html.fromstring(r.text)
+        soup = BeautifulSoup(r.text)
         del r
-        links = html.xpath('//a')
+        links = soup.find_all('a')
         for link in links:
-            self._command_paths.append(link.attrib['href'])
+            self._command_paths.append(link.get('href'))
 
     def __iter__(self):
         for relative_path in self._command_paths:
@@ -35,12 +34,12 @@ class Command(object):
         self._description = ''
 
         r = requests.get(self.url)
-        html = lxml.html.fromstring(r.text)
+        soup = BeautifulSoup(r.text)
         del r
-        tds = html.xpath('//td')
-        name = tds[1].text.strip()
-        format_ = tds[4].text.strip()
-        description = tds[7].text.strip()
+        tds = soup.find_all('td')
+        name = tds[1].get_text().strip()
+        format_ = tds[4].get_text().strip()
+        description = tds[7].get_text().strip()
 
         x = format_.split(';')
         assert name == x[0]
