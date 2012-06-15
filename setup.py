@@ -18,4 +18,8 @@ setup(name='python-nagext',
 #    entry_points={
 #        'console_scripts': ['nagext_api = nagext.api:main'],
 #        },
-    packages=['nagext'])
+    packages=['nagext'],
+    data_files=[
+        ('share/nagext', ['share/nagext/nagext_commands.pickle']),
+        ],
+    )
