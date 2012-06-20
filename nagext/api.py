@@ -33,12 +33,12 @@ def top():
 
 @app.route('/commands/')
 def command_list():
-    #return '<br />'.join(
-    #        ['<a href="%s">%s</a>' %
-    #            (url_for('command', name=command.lower()), command)
-    #            for command in nagext_commands]
-    #        )
-    return render_template('commands.html', nagext_commands=nagext_commands)
+    return '<br />'.join(
+            ['<a href="%s">%s</a>' %
+                (url_for('command', name=command.lower()), command)
+                for command in nagext_commands]
+            )
+    #return render_template('commands.html', nagext_commands=nagext_commands)
 
 
 @app.route('/commands/<name>', methods=['GET', 'POST'])

@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='python-nagext',
-    version='0.3',
+    version='0.4',
     description='Python interface to Nagios external commands',
     long_description='This module allows sending external commands to Nagios from Python',
     license='LGPL3',
