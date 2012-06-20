@@ -5,7 +5,12 @@ import os
 os.chdir(os.environ['PWD'])
 import pickle
 from contextlib import closing
-from flask import Flask, request, abort, render_template, g
+from flask import (
+        Flask,
+        request, g,
+        abort, render_template, redirect,
+        url_for,
+        )
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -23,8 +28,14 @@ nagext_commands = pickle.load(open(app.config['NAGEXT_COMMAND_LIST']))
 
 @app.route('/')
 def top():
+    return redirect(url_for('command_list'))
+
+
+@app.route('/commands/')
+def command_list():
     return '<br />'.join(
-            ['<a href="/commands/%s">%s</a>' % (command.lower(), command)
+            ['<a href="%s">%s</a>' %
+                (url_for('command', name=command.lower()), command)
                 for command in nagext_commands]
             )
 
@@ -56,7 +67,7 @@ def post_command(name):
             name.upper(),
             ';'.join(args)
             )
-    with closing(open(app.config['COMMAND_FILE'], 'a+')) as f:
+    with open(app.config['COMMAND_FILE'], 'a+') as f:
         f.write(command_string)
     return 'OK'
 
