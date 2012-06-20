@@ -80,3 +80,7 @@ if __name__ == '__main__':
     app.run(host=app.config['BIND_HOST'],
             port=app.config['BIND_PORT'],
             debug=app.config['DEBUG'])
+elif app.config['DEBUG'] == True:
+    from werkzeug.debug import DebuggedApplication
+    app.wsgi_app = DebuggedApplication(app.wsgi_app, evalex=True)
+application = app
