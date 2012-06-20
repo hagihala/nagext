@@ -33,11 +33,12 @@ def top():
 
 @app.route('/commands/')
 def command_list():
-    return '<br />'.join(
-            ['<a href="%s">%s</a>' %
-                (url_for('command', name=command.lower()), command)
-                for command in nagext_commands]
-            )
+    #return '<br />'.join(
+    #        ['<a href="%s">%s</a>' %
+    #            (url_for('command', name=command.lower()), command)
+    #            for command in nagext_commands]
+    #        )
+    return render_template('commands.html', nagext_commands=nagext_commands)
 
 
 @app.route('/commands/<name>', methods=['GET', 'POST'])
@@ -45,7 +46,10 @@ def command(name):
     if name.upper() not in nagext_commands:
         abort(404)
     if request.method == 'POST':
-        return post_command(name)
+        try:
+            return post_command(name)
+        except IOError as e:
+            abort(500)
 
     command = nagext_commands[name.upper()]
     return '<h1>%s</h1><p>params: %s</p><p>%s</p>' % (
