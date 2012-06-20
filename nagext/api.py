@@ -8,7 +8,7 @@ from contextlib import closing
 from flask import (
         Flask,
         request, g,
-        abort, render_template, redirect,
+        abort, render_template_string, redirect,
         url_for,
         )
 
@@ -33,12 +33,15 @@ def top():
 
 @app.route('/commands/')
 def command_list():
-    return '<br />'.join(
-            ['<a href="%s">%s</a>' %
-                (url_for('command', name=command.lower()), command)
-                for command in nagext_commands]
-            )
-    #return render_template('commands.html', nagext_commands=nagext_commands)
+    template_str = """\
+<title>Command List</title>
+<ul>
+  {% for command in nagext_commands -%}
+  <li><a href="{{ url_for('command', name=command|lower) }}">{{ command }}</a></li>
+  {% endfor -%}
+</ul>
+"""
+    return render_template_string(template_str, nagext_commands=nagext_commands)
 
 
 @app.route('/commands/<name>', methods=['GET', 'POST'])
@@ -52,6 +55,24 @@ def command(name):
             abort(500)
 
     command = nagext_commands[name.upper()]
+
+    template_str = """\
+<title>Command {{ name|upper }}</title>
+<h1>{{ name|upper }}</h1>
+<p>params:{% for param in command.params %} {{ param }}{% endfor %}</p>
+<p>{{ command.description }}</p>
+<form action="{{url_for('command', name=name)}}" method="post">
+<dl>
+{% for param in command.params -%}
+<dt><label for="{{ param }}">{{ param }}: </label></dt>
+<dd><input type="text" name="{{ param }}" /></dd>
+{% endfor %}
+</dl>
+<input type="submit" />
+</form>
+"""
+    return render_template_string(template_str, name=name, command=command)
+
     return '<h1>%s</h1><p>params: %s</p><p>%s</p>' % (
             name,
             command['params'],
