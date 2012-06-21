@@ -10,7 +10,8 @@ def main():
         sys.stderr.write(command.name + "\n")
         commands_dict[command.name] = {
                 'params': command.params,
-                'description': command.description
+                'description': command.description,
+                'id': command.id,
                 }
     pickle.dump(commands_dict, sys.stdout)
 

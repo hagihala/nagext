@@ -59,6 +59,7 @@ def command(name):
     template_str = """\
 <title>Command {{ name|upper }}</title>
 <h1>{{ name|upper }}</h1>
+<p>id: <a href="http://old.nagios.org/developerinfo/externalcommands/commandinfo.php?command_id={{ command.id }}">{{ command.id }}</a></p>
 <p>params:{% for param in command.params %} {{ param }}{% endfor %}</p>
 <p>{{ command.description }}</p>
 <form action="{{url_for('command', name=name)}}" method="post">

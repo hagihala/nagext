@@ -2,6 +2,7 @@
 
 import re
 import requests
+from urlparse import urlparse
 from bs4 import BeautifulSoup
 
 class CommandList(object):
@@ -29,10 +30,12 @@ class Command(object):
     def __init__(self, base_url, relative_path):
         self._base_url = base_url
         self._relative_path = relative_path
+        self._id = None
         self._name = ''
         self._params = []
         self._description = ''
 
+        self._id = int(relative_path[relative_path.index('command_id=')+11:])
         r = requests.get(self.url)
         soup = BeautifulSoup(r.text)
         del r
@@ -50,6 +53,10 @@ class Command(object):
     @property
     def url(self):
         return self._base_url + self._relative_path
+
+    @property
+    def id(self):
+        return self._id
 
     @property
     def name(self):
